@@ -7,11 +7,14 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.util.Arrays;
 
 public class EndPanel extends JPanel {
     private BufferedImage screen, replay;
     private CardLayout cl;
     private Energy e;
+    private Player[]playerLst;
+    private int[]playerScore;
     private int fstplace, fstplacepts, sndplace,trdplace,fthplace,sndplacepts,trdplacepts,fthplacepts;
     public EndPanel(CardLayout c){
         cl=c;
@@ -24,19 +27,31 @@ public class EndPanel extends JPanel {
             System.out.println("Exception Error3");
             return;
         }
+        playerLst=new Player[4];
+        playerLst[0]=Constants.p1;
+        playerLst[1]=Constants.p2;
+        playerLst[2]=Constants.p3;
+        playerLst[3]=Constants.p4;
+        playerScore=new int[4];
+        playerScore[0]=playerLst[0].getScore();
+        playerScore[1]=playerLst[1].getScore();
+        playerScore[2]=playerLst[2].getScore();
+        playerScore[3]=playerLst[3].getScore();
     }
+
+
 
     public void paint(Graphics g) {
         //screen
         g.drawImage(screen, 0, 0, getWidth(), getHeight(), null);
 
-        //replay button
-        //g.drawImage(replay, 590, 600, 600, 130, null);
+        Arrays.sort(playerLst);
+
 
         //winner label
         g.setFont(new Font("Sans", Font.BOLD, 100));
         g.setColor(Color.white);
-        g.drawString("WINNER: PLAYER " + fstplace + "!", 500, 200);
+        g.drawString("WINNER: PLAYER " + playerLst[3].getTurn()+1 + "!", 500, 200);
 
         //winner's points
         g.setFont(new Font("Sans", Font.BOLD, 60));
