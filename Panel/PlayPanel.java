@@ -1,7 +1,5 @@
 package Panels;
 import GameComponents.*;
-import com.sun.source.tree.Tree;
-
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
@@ -96,11 +94,11 @@ public class PlayPanel extends JPanel implements ActionListener {
         energyDeck=new EnergyDeck();
         six=energyDeck.topSix();
 
-        p1=new Player(true);
-        p2=new Player(false);
-        p3=new Player(false);
-        p4=new Player(false);
-        currPlayer=new Player(false);
+        p1=new Player(true, 1);
+        p2=new Player(false, 2);
+        p3=new Player(false, 3);
+        p4=new Player(false, 4);
+        currPlayer=new Player(false, 0);
 
         buttonsForResearchCards=new ArrayList<>();
         r1B=new MyButton("l1",false);
@@ -169,6 +167,11 @@ public class PlayPanel extends JPanel implements ActionListener {
         playerlst[1]=p2;
         playerlst[2]=p3;
         playerlst[3]=p4;
+
+        Constants.p1=p1;
+        Constants.p2=p2;
+        Constants.p3=p3;
+        Constants.p4=p4;
 
         setUpLevel1();
         setUpLevel2();
@@ -407,6 +410,10 @@ public class PlayPanel extends JPanel implements ActionListener {
             game(g);
             end=curr;
             if (end==0){
+                Constants.p1=p1;
+                Constants.p2=p2;
+                Constants.p3=p3;
+                Constants.p4=p4;
                 cl.show(Constants.PANEL, Constants.ENDPANELNAME);
             }
         }
@@ -641,7 +648,7 @@ public class PlayPanel extends JPanel implements ActionListener {
                 int xx=getWidth()*60/1600;
                 ArrayList<Card>filedCard=currPlayer.getFiled();
                 for (int i=0;i<filedCard.size();i++){
-                    JButton b = new MyButton("Filed Card "+(i+1), true);
+                    JButton b = new MyButton("Filed Card "+(i+1), false);
                     FCB.add(b);
                 }
                 int i=0;
@@ -1089,7 +1096,7 @@ public class PlayPanel extends JPanel implements ActionListener {
     }
 
     public boolean gameEnd(){
-        if (p1.getCardNum()>=16){
+        if (p1.getCardNum()>=3){
             return true;
         }
         if (p2.getCardNum()>=16){
