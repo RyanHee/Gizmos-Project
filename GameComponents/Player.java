@@ -9,7 +9,7 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.util.*;
 
-public class Player {
+public class Player implements Comparable<Player>{
     private TreeMap<String, ArrayList<Card>> inventory;
     private ArrayList<UpgradeCard> Upgrade;
     private ArrayList<ConverterCard> Converter;
@@ -27,7 +27,7 @@ public class Player {
     private int FileBuiltDiscount;
     private int ResearchBuiltDiscount;
     private int Level2BuildDiscount;
-
+    private int turn;
     private boolean start;
     private BufferedImage inventoryImg;
     private TreeMap<String, ArrayList<Energy>> energyStorage;
@@ -39,11 +39,11 @@ public class Player {
 
 
 
-    public Player(boolean s){
+    public Player(boolean s, int t){
         inventory=new TreeMap<>();
         map=new TreeMap<>();
         reversemap=new TreeMap<>();
-
+        turn=t;
         Upgrade=new ArrayList<>();
         Build=new ArrayList<>();
         Converter=new ArrayList<>();
@@ -223,6 +223,10 @@ public class Player {
         return maxEnergy;
     }
 
+    public int getTurn(){
+        return turn;
+    }
+
     public int getResearchNum(){
         return researchNum;
     }
@@ -253,6 +257,7 @@ public class Player {
     }
 
     public int getScore(){
+        score=calculateScore();
         return score;
     }
 
@@ -414,5 +419,28 @@ public class Player {
         if (c.getType().equals("Upgrade")){
             upgradeStats(c);
         }
+    }
+
+    @Override
+    public int compareTo(Player p) {
+        if (this.getScore()>p.getScore()){
+            return 1;
+        }
+        else if (this.getScore()==p.getScore()){
+            if (this.getCardNum()>p.getCardNum()){
+                return 1;
+            }
+            else if (this.getCardNum()==p.getCardNum()){
+                if (this.getEnergyStorage().size()>p.getEnergyStorage().size()){
+                    return 1;
+                }
+                else if (this.getEnergyStorage().size()==p.getEnergyStorage().size()){
+                    if (this.getTurn()>p.getTurn()){
+                        return 1;
+                    }
+                }
+            }
+        }
+        return -1;
     }
 }
