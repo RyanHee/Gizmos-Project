@@ -5,17 +5,18 @@ import GameComponents.*;
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.util.Arrays;
 
-public class EndPanel extends JPanel {
+public class EndPanel extends JPanel implements ActionListener {
     private BufferedImage screen, replay;
     private CardLayout cl;
-    private Energy e;
+
     private Player[]playerLst;
-    private int[]playerScore;
-    private int fstplace, fstplacepts, sndplace,trdplace,fthplace,sndplacepts,trdplacepts,fthplacepts;
+    private JButton backButton;
     public EndPanel(CardLayout c){
         cl=c;
 
@@ -32,11 +33,10 @@ public class EndPanel extends JPanel {
         playerLst[1]=Constants.p2;
         playerLst[2]=Constants.p3;
         playerLst[3]=Constants.p4;
-        playerScore=new int[4];
-        playerScore[0]=playerLst[0].getScore();
-        playerScore[1]=playerLst[1].getScore();
-        playerScore[2]=playerLst[2].getScore();
-        playerScore[3]=playerLst[3].getScore();
+
+        backButton=new MyButton("back", false);
+        backButton.addActionListener(this);
+        add(backButton);
     }
 
 
@@ -49,20 +49,45 @@ public class EndPanel extends JPanel {
 
 
         //winner label
-        g.setFont(new Font("Sans", Font.BOLD, 100));
-        g.setColor(Color.white);
-        g.drawString("WINNER: PLAYER " + playerLst[3].getTurn()+1 + "!", 500, 200);
-
-        //winner's points
         g.setFont(new Font("Sans", Font.BOLD, 60));
-        g.setColor(Color.white);
-        g.drawString(fstplacepts + " pts" , 850, 270);
+        g.setColor(Color.WHITE);
+        String str = "WINNER: PLAYER " + (playerLst[3].getTurn()) +" with " + playerLst[3].getScore() + " POINTS!";
+        FontMetrics fontMetrics=g.getFontMetrics();
+        int stringwidth=fontMetrics.stringWidth(str);
+        g.drawString(str, getWidth()/2-stringwidth/2, getHeight()*200/900);
+
 
         //place labels
-        g.setFont(new Font("Sans", Font.BOLD, 20));
-        g.drawString("2nd: player " + sndplace +  "- " + sndplacepts + "pts", 850, 400);
-        g.drawString("3nd: player " + trdplace +  "- " + trdplacepts + "pts", 850, 460);
-        g.drawString("4nd: player " + fthplace +  "- " + fthplacepts + "pts", 850, 520);
+        g.setFont(new Font("Sans", Font.BOLD, 40));
+        fontMetrics=g.getFontMetrics();
+        str="2nd place: player " + (playerLst[2].getTurn()) +  " with " + playerLst[2].getScore() + " points";
+        stringwidth=fontMetrics.stringWidth(str);
+        g.drawString(str, getWidth()/2-stringwidth/2, getHeight()*400/900);
 
+        str="3nd place: player " + (playerLst[1].getTurn()) +  " with " + playerLst[1].getScore() + " points";
+        stringwidth=fontMetrics.stringWidth(str);
+        g.drawString(str, getWidth()/2-stringwidth/2, getHeight()*460/900);
+
+        str="4th place: player " + (playerLst[0].getTurn()) +  " with " + playerLst[0].getScore() + " points";
+        stringwidth=fontMetrics.stringWidth(str);
+        g.drawString(str, getWidth()/2-stringwidth/2, getHeight()*520/900);
+
+        g.setFont(new Font("Sans", Font.BOLD, 20));
+        fontMetrics=g.getFontMetrics();
+        stringwidth=fontMetrics.stringWidth("Play Screen");
+        int stringheight=fontMetrics.getAscent();
+        g.fillRect(getWidth()*1450/1600, getHeight()*850/900, getWidth()*150/1600, getHeight()*50/900);
+        g.setColor(Color.BLACK);
+        g.drawString("Play Screen", getWidth()*1525/1600-stringwidth/2, (getHeight()*880)/900);
+        backButton.setBounds(getWidth()*1450/1600, getHeight()*850/900, getWidth()*150/1600, getHeight()*50/900);
+    }
+
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        if (e.getSource()==backButton){
+            Constants.showEnd=true;
+            System.out.println(1);
+            cl.show(Constants.PANEL, Constants.PLAYPANELNAME);
+        }
     }
 }
