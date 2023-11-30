@@ -18,12 +18,12 @@ public class Screen extends JFrame {
         StartPanel startPanel = new StartPanel(cl);
         PlayPanel playPanel = new PlayPanel(cl);
         EndPanel endPanel = new EndPanel(cl);
-        ConvertPanel convertPanel=new ConvertPanel(cl);
+        HTPPanel htp = new HTPPanel(cl);
 
         mainPanel.add(startPanel, Constants.STARTPANELNAME);
         mainPanel.add(playPanel, Constants.PLAYPANELNAME);
         mainPanel.add(endPanel, Constants.ENDPANELNAME);
-        mainPanel.add(convertPanel, "convert");
+        mainPanel.add(htp,Constants.HTPPANELNAME);
 
         add(mainPanel);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
