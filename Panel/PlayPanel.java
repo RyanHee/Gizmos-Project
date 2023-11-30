@@ -43,7 +43,7 @@ public class PlayPanel extends JPanel implements ActionListener {
     private EnergyDeck energyDeck;
     private ArrayList<Energy>six;
     private Card converterCardPicked;
-    private JButton energyDeckButton, convertB, fileB, pickB, buildB, r1B, r2B, r3B, blueB, redB, yellowB, blackB, test;
+    private JButton energyDeckButton, convertB, fileB, pickB, buildB, r1B, r2B, r3B, blueB, redB, yellowB, blackB, showEnd;
     private ArrayList<JButton> energyButtonLst;
     private ArrayList<Card> lst=new ArrayList<>();
     private int inventoryHeight;
@@ -211,18 +211,18 @@ public class PlayPanel extends JPanel implements ActionListener {
             }
         }
 
-        p1.pick(new Energy("Blue", 0,0));
-        p1.pick(new Energy("Blue", 0,0));
-        p1.pick(new Energy("Red", 0,0));
+        //p1.pick(new Energy("Blue", 0,0));
+        //p1.pick(new Energy("Blue", 0,0));
+        p1.pick(new Energy("Black", 0,0));
         p1.pick(new Energy("Black", 0,0));
         p1.pick(new Energy("Black", 0,0));
         p1.File(new ConverterCard(1, 1, "Red", 1, "Converter", "Blue", "Any"));
-        //p1.addCard(new UpgradeCard(2,3,"Black",3,"Upgrade","2_1_2"));
-        //p1.addCard(new UpgradeCard(2,3,"Black",3,"Upgrade","2_1_2"));
+        p1.addCard(new ConverterCard(3,4,"Red",4,"Converter","Any","Any"));
+        p1.addCard(new ConverterCard(3,5,"Blue",5,"Converter","Black_Red","Split"));
         p2.addCard(new UpgradeCard(2,3,"Black",3,"Upgrade","2_1_2"));
         p2.addCard(new ConverterCard(1, 1, "Red", 1, "Converter", "Black", "Any"));
         p2.pick(new Energy("Black", 0, 0));
-        p2.pick(new Energy("Blue",1,1));
+        p2.pick(new Energy("Black",1,1));
         p2.pick(new Energy("Red",0,0));
 
         ConverterButtonList=new ArrayList<>();
@@ -234,11 +234,17 @@ public class PlayPanel extends JPanel implements ActionListener {
         //label.setText("pick input energy");
         //label.repaint();
         //repaint();
+        showEnd=new MyButton("showEnd", false);
 
-
+        showEnd.addActionListener(this);
+        add(showEnd);
+        showEnd.setVisible(false);
     }
     public void paint(Graphics g) {
         super.paint(g);
+
+
+
 
         int inventoryWidth=getWidth()*500/1600;
         inventoryHeight=getHeight()*50/900;
@@ -264,7 +270,18 @@ public class PlayPanel extends JPanel implements ActionListener {
         g.drawLine(getWidth()/2, 0, getWidth()/2, getHeight());
 
 
-
+        if (Constants.showEnd){
+            g.setColor(Color.WHITE);
+            g.fillRect(getWidth()*1450/1600, getHeight()*850/900, getWidth()*150/1600, getHeight()*50/900);
+            g.setFont(new Font("Sans", Font.BOLD, 20));
+            FontMetrics fontMetrics=g.getFontMetrics();
+            int stringwidth=fontMetrics.stringWidth("End Screen");
+            g.fillRect(getWidth()*1450/1600, getHeight()*850/900, getWidth()*150/1600, getHeight()*50/900);
+            g.setColor(Color.BLACK);
+            g.drawString("End Screen", getWidth()*1525/1600-stringwidth/2, (getHeight()*880)/900);
+            showEnd.setBounds(getWidth()*1450/1600, getHeight()*850/900, getWidth()*150/1600, getHeight()*50/900);
+            showEnd.setVisible(true);
+        }
 
         //Player 1 top left
         int x=0;
@@ -379,13 +396,14 @@ public class PlayPanel extends JPanel implements ActionListener {
 
 
         if (build&&convert){
-            g.setColor(Color.BLUE);
+
             ArrayList<Card> converters = currPlayer.getConverters();
 
             //int i=0;
             int xx=getWidth()*60/1600;
 
             for (int i=0;i<converters.size();i++) {
+                g.setColor(Color.BLUE);
                 //b.addActionListener(this);
                 //add(b);
                 //b.setBounds(getWidth()*600/1600+i*xx, getHeight()*600/900, getWidth()*50/1600, getHeight()*50/900);
@@ -406,10 +424,10 @@ public class PlayPanel extends JPanel implements ActionListener {
         //while (end==false){
         //for (int i=0;i<4;i++){
         if (gameEnd()){
-            System.out.println("end"+end);
+            //System.out.println("end"+end);
             game(g);
             end=curr;
-            if (end==0){
+            if (end==0&&!Constants.showEnd){
                 Constants.p1=p1;
                 Constants.p2=p2;
                 Constants.p3=p3;
@@ -420,7 +438,7 @@ public class PlayPanel extends JPanel implements ActionListener {
         else{
             game(g);
         }
-            //repaint();
+        //repaint();
         //}
 
 
@@ -478,9 +496,9 @@ public class PlayPanel extends JPanel implements ActionListener {
 
                 strWidth=fontMetrics.stringWidth("FC"+(i+1));
                 int strHeight=fontMetrics.getAscent();
-                g.fillRect(getWidth()*600/1600+i*xx, getHeight()*600/900, getWidth()*50/1600, getHeight()*50/900);
+                g.fillRect(getWidth()*600/1600+i*xx, getHeight()*660/900, getWidth()*50/1600, getHeight()*50/900);
                 g.setColor(Color.WHITE);
-                g.drawString("FC"+(i+1), getWidth()*600/1600+i*xx+getWidth()*25/1600-strWidth/2, getHeight()*620/900+strHeight/2);
+                g.drawString("FC"+(i+1), getWidth()*600/1600+i*xx+getWidth()*25/1600-strWidth/2, getHeight()*682/900+strHeight/2);
 
                 //b.setVisible(!pickConverter);
 
@@ -493,14 +511,21 @@ public class PlayPanel extends JPanel implements ActionListener {
         }
 
         if (didAction){
-
+            ArrayList<Card>converters=currPlayer.getConverters();
+            ArrayList<Card>NewConverters=new ArrayList<>();
+            for (Card c:converters){
+                ConverterCard cc = (ConverterCard) c;
+                cc.reset();
+                NewConverters.add(cc);
+            }
+            currPlayer.replaceConverters(NewConverters);
             curr++;
             repaint();
             didAction=false;
             resetBooleans();
         }
 
-            //repaint();
+        //repaint();
 
 
 
@@ -534,6 +559,12 @@ public class PlayPanel extends JPanel implements ActionListener {
     @Override
     public void actionPerformed(ActionEvent e) {
         int a=0;
+
+
+        if (e.getSource()==showEnd){
+            cl.show(Constants.PANEL, Constants.ENDPANELNAME);
+        }
+
 
         if (e.getSource()==pickB){
             if (!file && !build && !convert && !l1r && !l2r && !l3r){
@@ -644,18 +675,19 @@ public class PlayPanel extends JPanel implements ActionListener {
                 bff=true;
                 label="Convert?";
                 display=1;
-                FCB=new ArrayList<>();
+
+                //FCB=new ArrayList<>();
                 int xx=getWidth()*60/1600;
                 ArrayList<Card>filedCard=currPlayer.getFiled();
                 for (int i=0;i<filedCard.size();i++){
-                    JButton b = new MyButton("Filed Card "+(i+1), false);
+                    JButton b = new MyButton("FC"+(i+1)+currPlayer.getTurn(), false);
                     FCB.add(b);
                 }
                 int i=0;
                 for (JButton b:FCB){
                     b.addActionListener(this);
                     add(b);
-                    b.setBounds(getWidth()*600/1600+i*xx, getHeight()*600/900, getWidth()*50/1600, getHeight()*50/900);
+                    b.setBounds(getWidth()*600/1600+i*xx, getHeight()*660/900, getWidth()*50/1600, getHeight()*50/900);
                     i++;
                 }
 
@@ -781,91 +813,462 @@ public class PlayPanel extends JPanel implements ActionListener {
             System.out.println("EnergyDeckButton");
         }
 
-        if(e.getSource()==redB){
+        if (e.getSource()==redB){
             if (pickConverter&&convert&&grab){
                 input=currPlayer.removeEnergy("Red");
-                grab=false;
-                pickOut=true;
-                label="pick output energy";
-                repaint();
+                ConverterCard c = (ConverterCard) converterCardPicked;
+                //split
+                if (c.getOutpt().equals("Split")){
+                    if (c.getLevel()==2){
+                        if (input==null){
+                            label="Convert failed!";
+                            repaint();
+                        }
+                        ArrayList<Energy> outpt= c.convert22(input);
+                        System.out.println(outpt.size());
+                        if (outpt.isEmpty()){
+                            label="Convert failed!";
+                            repaint();
+                        }
+                        else{
+                            for (Energy energy:outpt){
+                                currPlayer.pick(energy);
+                            }
+                            label="Convert success";
+                            repaint();
+                        }
+                    }
+                    else{
+
+                        if (input==null){
+                            label="Convert failed!";
+                            repaint();
+                        }
+                        ArrayList<Energy> outpt= c.convert23(input);
+                        if (outpt.isEmpty()){
+                            label="Convert failed!";
+                            repaint();
+                        }
+                        else{
+                            for (Energy energy:outpt){
+                                currPlayer.pick(energy);
+                            }
+                            label="Convert success";
+                            repaint();
+                        }
+
+                    }
+
+                }
+                else{
+                    grab=false;
+                    label="pick output energy";
+                    pickOut=true;
+                    repaint();
+                }
+
             }
             else if (pickOut){
                 output="Red";
                 pickOut=false;
-                System.out.println("setRed");
+                System.out.println("Red");
                 ConverterCard c = (ConverterCard) converterCardPicked;
-                Energy con=c.convert(input, output);
-                System.out.println(c.getColor());
-                currPlayer.pick(con);
-                label="pick card to build now";
-                repaint();
+                if (input==null){
+                    label="Convert failed!";
+                    repaint();
+                }
+                else{
+                    if (c.getLevel()==1){
+                        Energy con=c.convert11(input, output);
+                        if (con==null){
+                            currPlayer.pick(input);
+                            label="Can't use same card twice!";
+                            repaint();
+                        }
+                        else{
+                            currPlayer.pick(con);
+                            label="Convert success";
+                            repaint();
+                        }
+
+                        System.out.println(c.getColor());
+                    }
+                    else if (c.getLevel()==2){
+                        Energy con=c.convert12(input, output);
+                        if (con==null){
+                            currPlayer.pick(input);
+                            label="Can't use same card twice!";
+                            repaint();
+                        }
+                        else{
+                            currPlayer.pick(con);
+                            label="Convert success";
+                            repaint();
+                        }
+                        System.out.println(c.getColor());
+                    }
+                    else{
+                        Energy con=c.convert13(input, output);
+                        if (con==null){
+                            currPlayer.pick(input);
+                            label="Can't use same card twice!";
+                            repaint();
+                        }
+                        else{
+                            currPlayer.pick(con);
+                            label="Convert success";
+                            repaint();
+                        }
+                        System.out.println(c.getColor());
+                    }
+                }
+
             }
 
-            //pickOut=true;
+
         }
 
         if (e.getSource()==blueB){
             if (pickConverter&&convert&&grab){
                 input=currPlayer.removeEnergy("Blue");
-                System.out.println("grab blue");
-                grab=false;
-                pickOut=true;
-                label="pick output energy";
-                repaint();
+                ConverterCard c = (ConverterCard) converterCardPicked;
+                //split
+                if (c.getOutpt().equals("Split")){
+                    if (c.getLevel()==2){
+                        if (input==null){
+                            label="Convert failed!";
+                            repaint();
+                        }
+                        ArrayList<Energy> outpt= c.convert22(input);
+                        System.out.println(outpt.size());
+                        if (outpt.isEmpty()){
+                            label="Convert failed!";
+                            repaint();
+                        }
+                        else{
+                            for (Energy energy:outpt){
+                                currPlayer.pick(energy);
+                            }
+                            label="Convert success";
+                            repaint();
+                        }
+                    }
+                    else{
+                        if (input==null){
+                            label="Convert failed!";
+                            repaint();
+                        }
+                        ArrayList<Energy> outpt= c.convert23(input);
+                        if (outpt.isEmpty()){
+                            label="Convert failed!";
+                            repaint();
+                        }
+                        else{
+                            for (Energy energy:outpt){
+                                currPlayer.pick(energy);
+                            }
+                            label="Convert success";
+                            repaint();
+                        }
+
+                    }
+
+                }
+                else{
+                    grab=false;
+                    label="pick output energy";
+                    pickOut=true;
+                    repaint();
+                }
+
             }
             else if (pickOut){
                 output="Blue";
                 pickOut=false;
-                System.out.println("setBlue");
+                System.out.println("Blue");
                 ConverterCard c = (ConverterCard) converterCardPicked;
-                Energy con=c.convert(input, output);
-                System.out.println(c.getColor());
-                currPlayer.pick(con);
-                label="pick card to build now";
-                repaint();
-            }
+                if (input==null){
+                    label="Convert failed!";
+                    repaint();
+                }
+                else{
+                    if (c.getLevel()==1){
+                        Energy con=c.convert11(input, output);
+                        if (con==null){
+                            currPlayer.pick(input);
+                            label="Can't use same card twice!";
+                            repaint();
+                        }
+                        else{
+                            currPlayer.pick(con);
+                            label="Convert success";
+                            repaint();
+                        }
 
+                        System.out.println(c.getColor());
+                    }
+                    else if (c.getLevel()==2){
+                        Energy con=c.convert12(input, output);
+                        if (con==null){
+                            currPlayer.pick(input);
+                            label="Can't use same card twice!";
+                            repaint();
+                        }
+                        else{
+                            currPlayer.pick(con);
+                            label="Convert success";
+                            repaint();
+                        }
+
+                        System.out.println(c.getColor());
+                    }
+                    else{
+                        Energy con=c.convert13(input, output);
+                        if (con==null){
+                            currPlayer.pick(input);
+                            label="Can't use same card twice!";
+                            repaint();
+                        }
+                        else{
+                            currPlayer.pick(con);
+                            label="Convert success";
+                            repaint();
+                        }
+
+                        System.out.println(c.getColor());
+                    }
+
+                }
+
+            }
         }
 
         if (e.getSource()==blackB){
             if (pickConverter&&convert&&grab){
                 input=currPlayer.removeEnergy("Black");
-                grab=false;
-                pickOut=true;
-                label="pick output energy";
-                repaint();
+                ConverterCard c = (ConverterCard) converterCardPicked;
+                //split
+                if (c.getOutpt().equals("Split")){
+                    if (c.getLevel()==2){
+                        if (input==null){
+                            label="Convert failed!";
+                            repaint();
+                        }
+                        ArrayList<Energy> outpt= c.convert22(input);
+                        System.out.println(outpt.size());
+                        if (outpt.isEmpty()){
+                            label="Convert failed!";
+                            repaint();
+                        }
+                        else{
+                            for (Energy energy:outpt){
+                                currPlayer.pick(energy);
+                            }
+                            label="Convert success";
+                            repaint();
+                        }
+                    }
+                    else{
+
+                        if (input==null){
+                            label="Convert failed!";
+                            repaint();
+                        }
+                        ArrayList<Energy> outpt= c.convert23(input);
+                        if (outpt.isEmpty()){
+                            label="Convert failed!";
+                            repaint();
+                        }
+                        else{
+                            for (Energy energy:outpt){
+                                currPlayer.pick(energy);
+                            }
+                            label="Convert success";
+                            repaint();
+                        }
+
+                    }
+
+                }
+                else{
+                    grab=false;
+                    label="pick output energy";
+                    pickOut=true;
+                    repaint();
+                }
+
             }
             else if (pickOut){
                 output="Black";
                 pickOut=false;
-                System.out.println("setBlack");
+                System.out.println("Black");
                 ConverterCard c = (ConverterCard) converterCardPicked;
-                Energy con=c.convert(input, output);
-                System.out.println(c.getColor());
-                currPlayer.pick(con);
-                label="pick card to build now";
-                repaint();
+                if (input==null){
+                    label="Convert failed!";
+                    repaint();
+                }
+                else{
+                    if (c.getLevel()==1){
+                        Energy con=c.convert11(input, output);
+                        if (con==null){
+                            currPlayer.pick(input);
+                            label="Can't use same card twice!";
+                            repaint();
+                        }
+                        else{
+                            currPlayer.pick(con);
+                            label="Convert success";
+                            repaint();
+                        }
+                        System.out.println(c.getColor());
+                    }
+                    else if (c.getLevel()==2){
+                        Energy con=c.convert12(input, output);
+                        if (con==null){
+                            currPlayer.pick(input);
+                            label="Can't use same card twice!";
+                            repaint();
+                        }
+                        else{
+                            currPlayer.pick(con);
+                            label="Convert success";
+                            repaint();
+                        }
+                        System.out.println(c.getColor());
+                    }
+                    else{
+                        Energy con=c.convert13(input, output);
+                        if (con==null){
+                            currPlayer.pick(input);
+                            label="Can't use same card twice!";
+                            repaint();
+                        }
+                        else{
+                            currPlayer.pick(con);
+                            label="Convert success";
+                            repaint();
+                        }
+                        System.out.println(c.getColor());
+                    }
+
+                }
+
             }
+
+
         }
 
         if (e.getSource()==yellowB){
             if (pickConverter&&convert&&grab){
                 input=currPlayer.removeEnergy("Yellow");
-                grab=false;
-                label="pick output energy";
-                pickOut=true;
-                repaint();
+                ConverterCard c = (ConverterCard) converterCardPicked;
+                //split
+                if (c.getOutpt().equals("Split")){
+                    if (c.getLevel()==2){
+                        if (input==null){
+                            label="Convert failed!";
+                            repaint();
+                        }
+                        ArrayList<Energy> outpt= c.convert22(input);
+                        System.out.println(outpt.size());
+                        if (outpt.isEmpty()){
+                            label="Convert failed!";
+                            repaint();
+                        }
+                        else{
+                            for (Energy energy:outpt){
+                                currPlayer.pick(energy);
+                            }
+                            label="Convert success";
+                            repaint();
+                        }
+
+                    }
+                    else{
+                        if (input==null){
+                            label="Convert failed!";
+                            repaint();
+                        }
+                        ArrayList<Energy> outpt= c.convert23(input);
+                        if (outpt.isEmpty()){
+                            label="Convert failed!";
+                            repaint();
+                        }
+                        else{
+                            for (Energy energy:outpt){
+                                currPlayer.pick(energy);
+                            }
+                            label="Convert success";
+                            repaint();
+                        }
+
+                    }
+
+                }
+                else{
+                    grab=false;
+                    label="pick output energy";
+                    pickOut=true;
+                    repaint();
+                }
+
             }
             else if (pickOut){
                 output="Yellow";
                 pickOut=false;
                 System.out.println("Yellow");
                 ConverterCard c = (ConverterCard) converterCardPicked;
-                Energy con=c.convert(input, output);
-                currPlayer.pick(con);
-                System.out.println(c.getColor());
-                label="pick card to build now";
-                repaint();
+                if (input==null){
+                    label="Convert failed!";
+                    repaint();
+                }
+                else{
+                    if (c.getLevel()==1){
+                        Energy con=c.convert11(input, output);
+                        if (con==null){
+                            currPlayer.pick(input);
+                            label="Can't use same card twice!";
+                            repaint();
+                        }
+                        else{
+                            currPlayer.pick(con);
+                            label="Convert success";
+                            repaint();
+                        }
+
+                        System.out.println(c.getColor());
+                    }
+                    else if (c.getLevel()==2){
+                        Energy con=c.convert12(input, output);
+                        if (con==null){
+                            currPlayer.pick(input);
+                            label="Can't use same card twice!";
+                            repaint();
+                        }
+                        else{
+                            currPlayer.pick(con);
+                            label="Convert success";
+                            repaint();
+                        }
+
+                        System.out.println(c.getColor());
+                    }
+                    else {
+                        Energy con = c.convert13(input, output);
+                        if (con == null) {
+                            currPlayer.pick(input);
+                            label = "Can't use same card twice!";
+                            repaint();
+                        } else {
+                            currPlayer.pick(con);
+                            label = "Convert success";
+                            repaint();
+                        }
+
+                        System.out.println(c.getColor());
+                    }
+                }
+
             }
 
 
@@ -886,6 +1289,7 @@ public class PlayPanel extends JPanel implements ActionListener {
                     else{
                         label="Can't build this card!";
                         display=1;
+                        build=false;
                         repaint();
                     }
                 }
@@ -918,10 +1322,11 @@ public class PlayPanel extends JPanel implements ActionListener {
                         System.out.println(b);
                         if (!FCB.isEmpty()){
                             for (JButton button:FCB){
+
                                 remove(button);
                             }
                         }
-                        FCB=new ArrayList<>();
+                        //FCB=new ArrayList<>();
                         if (b){
                             didAction=true;
                             if (i==0){
@@ -936,7 +1341,7 @@ public class PlayPanel extends JPanel implements ActionListener {
                         }
                         else if (!b){
                             display=1;
-                            System.out.println("cant build");
+                            System.out.println("can't build");
                             label="Can't build this card!";
                             build=false;
                             repaint();
@@ -1066,6 +1471,7 @@ public class PlayPanel extends JPanel implements ActionListener {
 
 
     public void resetBooleans(){
+        System.out.println("RESet boolean");
         convert=false;
         file=false;
         pick=false;
@@ -1087,16 +1493,18 @@ public class PlayPanel extends JPanel implements ActionListener {
         bff=false;
         if (!FCB.isEmpty()){
             for (JButton b:FCB){
+                System.out.println("removed FCB");
                 remove (b);
             }
         }
+        FCB=new ArrayList<>();
         //keepl1r=false;
 
         return;
     }
 
     public boolean gameEnd(){
-        if (p1.getCardNum()>=3){
+        if (p1.getCardNum()>=5){
             return true;
         }
         if (p2.getCardNum()>=16){
