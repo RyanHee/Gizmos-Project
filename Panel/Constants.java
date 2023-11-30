@@ -10,14 +10,12 @@ public class Constants {
     public static final String STARTPANELNAME="StartPanel";
     public static final String ENDPANELNAME="EndPanel";
     public static final String PLAYPANELNAME="PlayPanel";
+    public static final String HTPPANELNAME="HTPPanel";
     public static Player p1;
     public static Player p2;
     public static Player p3;
     public static Player p4;
-    public static int s1;
-    public static int s2;
-    public static int s3;
-    public static int s4;
+    public static boolean showEnd=false;
 
 
 }
