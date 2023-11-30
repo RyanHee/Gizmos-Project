@@ -1,23 +1,14 @@
 package GameComponents;
 
-import Panels.PlayPanel;
-import com.sun.source.tree.Tree;
+
 
 import javax.imageio.ImageIO;
-import javax.swing.tree.ExpandVetoException;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.util.*;
 
 public class Player implements Comparable<Player>{
     private TreeMap<String, ArrayList<Card>> inventory;
-    private ArrayList<UpgradeCard> Upgrade;
-    private ArrayList<ConverterCard> Converter;
-    private ArrayList<FileCard> File;
-    private ArrayList<PickCard> Pick;
-    private ArrayList<BuildCard> Build;
-
-    private ArrayList<Card> Storage;
     private int maxEnergy;
     private int maxFile;
     private int researchNum;
@@ -44,11 +35,6 @@ public class Player implements Comparable<Player>{
         map=new TreeMap<>();
         reversemap=new TreeMap<>();
         turn=t;
-        Upgrade=new ArrayList<>();
-        Build=new ArrayList<>();
-        Converter=new ArrayList<>();
-        File=new ArrayList<>();
-        Pick=new ArrayList<>();
 
         inventory.put("1Upgrade", new ArrayList<Card>());
         inventory.put("2Converter", new ArrayList<Card>());
@@ -212,6 +198,10 @@ public class Player implements Comparable<Player>{
 
         return inventory.get("2Converter");
     }
+
+    public void replaceConverters(ArrayList<Card>list){
+        inventory.replace("2Converter",list);
+    }
     public void setCanResearch(boolean b){
         canResearch=b;
     }
@@ -358,7 +348,8 @@ public class Player implements Comparable<Player>{
         boolean Mult2 = false;
         Iterator<String> iter = keys.iterator();
         int ret=0;
-        while (iter.hasNext()){
+        int i=0;
+        while (i<5){
             String s =iter.next();
             ArrayList<Card> lst =inventory.get(s);
             for (Card c:lst){
@@ -372,6 +363,7 @@ public class Player implements Comparable<Player>{
                     ret+=c.getValue();
                 }
             }
+            i++;
         }
         if (addEnergyNum){
             ret+=energyStorage.size();
